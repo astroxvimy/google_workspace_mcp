@@ -67,7 +67,6 @@ def _ensure_legacy_callback_route() -> None:
     if _legacy_callback_registered:
         return
     server.custom_route("/oauth2callback", methods=["GET"])(legacy_oauth2_callback)
-    server.custom_route("/mcp/oauth2callback", methods=["GET"])(legacy_oauth2_callback)
     _legacy_callback_registered = True
 
 def configure_server_for_http():
@@ -88,8 +87,6 @@ def configure_server_for_http():
 
     # Check if OAuth 2.1 is enabled via centralized config
     oauth21_enabled = config.is_oauth21_enabled()
-
-    _ensure_legacy_callback_route()
 
     if oauth21_enabled:
         if not config.is_configured():
@@ -117,6 +114,7 @@ def configure_server_for_http():
         server.auth = None
         _auth_provider = None
         set_auth_provider(None)
+        _ensure_legacy_callback_route()
 
 
 def get_auth_provider() -> Optional[GoogleProvider]:
